@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import * as faceapi from "face-api.js";
 
-const emotionEmoji = {
-  happy: "😁",
-  sad: "😢",
-  angry: "😡",
-  surprised: "😲",
-  fearful: "😨",
-  disgusted: "🤢",
-  neutral: "😐",
+const emotionImages = {
+  happy: "/sunset.png",
+  sad: "/sad.png",
+  angry: "/angry.png",
+  surprised: "/surprised.png",
+  fearful: "/anxiety.png",
+  disgusted: "/disgusting.png",
+  neutral: "/neutral.png"
 };
+
 
 const WebVideo = () => {
   const videoRef = useRef(null);
@@ -131,15 +132,21 @@ const WebVideo = () => {
 
       {/* Status to see the MOdel is running or not (ON/OFF) */}
       <p className="mt-3 text-center text-sm text-gray-600">
-        {modelsLoaded ? "Face Detection Models Started " : "Loading Models..."}
+        {modelsLoaded ? "Face Model is Activated " : "Loading Models..."}
       </p>
 
       <div className=" font-semibold text-gray-600 text-2xl font-mono flex justify-center">
           <h1>Moood:  </h1>
           <div className=" text-2xl">
-            <p>{emotionEmoji[displayExperssion]}</p>
+
             <p>{displayExperssion}</p>
-            {displayExperssion === "sad" && "Dont be sad be Happy "}
+            <img
+                src={emotionImages[displayExperssion]}
+                alt={displayExperssion}
+                className="w-16 h-16"
+              />
+            {displayExperssion === "sad" && <p className=" text-gray-600  font-thin">Why said Bro! Be Happy</p> }
+            {displayExperssion === "happy" && <p className=" text-gray-600  font-thin">Always be Smile like that!</p> }
           </div>
       </div>
     </div>
