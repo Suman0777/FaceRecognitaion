@@ -1,6 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import * as faceapi from "face-api.js";
 
+const emotionEmoji = {
+  happy: "😁",
+  sad: "😢",
+  angry: "😡",
+  surprised: "😲",
+  fearful: "😨",
+  disgusted: "🤢",
+  neutral: "😐",
+};
+
 const WebVideo = () => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -64,6 +74,8 @@ const WebVideo = () => {
           displaySize
         );
         
+
+        // For display the emoji in the ui 
         if(detections.length > 0){
           const expressionss = detections[0].expressions;
 
@@ -95,9 +107,9 @@ const WebVideo = () => {
   }, [modelsLoaded]);
 
   return (
-    <div className="w-full max-w-md sm:max-w-lg bg-white/70 backdrop-blur-md rounded-2xl shadow-xl p-4 sm:p-6">
+    <div className="shadow-2xs shadow-gray/80 w-full max-w-md sm:max-w-lg bg-black/20 backdrop-blur-md rounded-2xl shadow-xl p-4 sm:p-6">
       {/* Title */}
-      <p className="text-center text-lg sm:text-2xl font-semibold font-mono mb-4">
+      <p className=" text-gray-700 text-center text-lg sm:text-2xl font-semibold font-mono mb-4">
         Face Detection Webcam
       </p>
 
@@ -117,14 +129,18 @@ const WebVideo = () => {
         />
       </div>
 
-      {/* Status ON/OFF */}
+      {/* Status to see the MOdel is running or not (ON/OFF) */}
       <p className="mt-3 text-center text-sm text-gray-600">
         {modelsLoaded ? "Face Detection Models Started " : "Loading Models..."}
       </p>
 
-      <div>
-          <h1>EXpression is: </h1>
-          <p>{displayExperssion}</p>
+      <div className=" font-semibold text-gray-600 text-2xl font-mono flex justify-center">
+          <h1>Moood:  </h1>
+          <div className=" text-2xl">
+            <p>{emotionEmoji[displayExperssion]}</p>
+            <p>{displayExperssion}</p>
+            {displayExperssion === "sad" && "Dont be sad be Happy "}
+          </div>
       </div>
     </div>
   );
