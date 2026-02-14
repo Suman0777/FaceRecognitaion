@@ -5,8 +5,9 @@ const WebVideo = () => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [modelsLoaded, setModelsLoaded] = useState(false);
+  const [displayExperssion , setdisplayExpression] = useState("...Loading");
 
-  //  Load models
+  // Load models
   useEffect(() => {
     const loadModels = async () => {
       const MODEL_URL = "/models";
@@ -14,8 +15,8 @@ const WebVideo = () => {
       await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
       await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
       await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
-      await  faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL);
-      console.log(" Models loaded");
+      await faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL);
+
       setModelsLoaded(true);
     };
 
@@ -42,50 +43,51 @@ const WebVideo = () => {
       const video = videoRef.current;
       const canvas = canvasRef.current;
 
-      if (
-        video &&
-        video.readyState === 4 &&
-        video.videoWidth > 0
-      ) {
+      if (video && video.readyState === 4 && video.videoWidth > 0) {
         const displaySize = {
           width: video.videoWidth,
           height: video.videoHeight,
         };
-
 
         canvas.width = displaySize.width;
         canvas.height = displaySize.height;
 
         faceapi.matchDimensions(canvas, displaySize);
 
-        try {
-          const detections = await faceapi
-            .detectAllFaces(
-              video,
-              new faceapi.TinyFaceDetectorOptions()
-            )
-            .withFaceLandmarks()
-            .withFaceExpressions();
+        const detections = await faceapi
+          .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+          .withFaceLandmarks()
+          .withFaceExpressions();
 
-          const resizedDetections = faceapi.resizeResults(
-            detections,
-            displaySize
-          );
+        const resizedDetections = faceapi.resizeResults(
+          detections,
+          displaySize
+        );
+        
+        if(detections.length > 0){
+          const expressionss = detections[0].expressions;
 
-          //for Clearing the canvas after Every second load
-          const clearrr = canvas.getContext("2d");
-          clearrr.clearRect(0, 0, canvas.width, canvas.height);
+          let maxVal = 0;
+          let dominatExpression = "neutral";
 
-          faceapi.draw.drawDetections(canvas, resizedDetections);
-          faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
-          faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
-          if (detections.length > 0) {
-                console.log(detections[0].expressions);
+          for(let exp in expressionss){
+            if(expressionss[exp] > maxVal){
+              maxVal = expressionss[exp];
+              dominatExpression = exp;
             }
+          }
 
-        } catch (err) {
-          console.error("Detection error:", err);
+          setdisplayExpression(dominatExpression);
         }
+
+
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        faceapi.draw.drawDetections(canvas, resizedDetections);
+        faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
+        faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
+      
       }
     }, 150);
 
@@ -93,25 +95,37 @@ const WebVideo = () => {
   }, [modelsLoaded]);
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <p className="text-2xl font-semibold opacity-80 font-mono">
-        MY WebCam For Face Detection 
+    <div className="w-full max-w-md sm:max-w-lg bg-white/70 backdrop-blur-md rounded-2xl shadow-xl p-4 sm:p-6">
+      {/* Title */}
+      <p className="text-center text-lg sm:text-2xl font-semibold font-mono mb-4">
+        Face Detection Webcam
       </p>
 
-
+      {/* Camera Container */}
+      <div className="relative w-full aspect-[3/4] sm:aspect-video rounded-xl overflow-hidden border border-black/10">
         <video
           ref={videoRef}
           autoPlay
           playsInline
           muted
-          className=" relative"
+          className="absolute inset-0 w-full h-full object-cover"
         />
 
         <canvas
           ref={canvasRef}
-          className="absolute "
+          className="absolute inset-0 w-full h-full"
         />
+      </div>
 
+      {/* Status ON/OFF */}
+      <p className="mt-3 text-center text-sm text-gray-600">
+        {modelsLoaded ? "Face Detection Models Started " : "Loading Models..."}
+      </p>
+
+      <div>
+          <h1>EXpression is: </h1>
+          <p>{displayExperssion}</p>
+      </div>
     </div>
   );
 };
