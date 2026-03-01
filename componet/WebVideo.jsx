@@ -108,11 +108,14 @@ const WebVideo = () => {
   }, [modelsLoaded]);
 
   return (
-    <div className="shadow-2xs shadow-gray/80 w-full max-w-md sm:max-w-lg bg-black/20 backdrop-blur-md rounded-2xl shadow-xl p-4 sm:p-6">
+    <div className="shadow-2xs shadow-gray/80 w-full max-w-md sm:max-w-lg bg-black/40 backdrop-blur-md rounded-2xl shadow-xl p-4 sm:p-6">
       {/* Title */}
-      <p className=" text-gray-700 text-center text-lg sm:text-2xl font-semibold font-mono mb-4">
+      <p className="text-xs font-semibold tracking-[0.35em] text-slate-800/60 uppercase dark:text-slate-200/60 flex justify-center mb-4">
         Face Detection Webcam
       </p>
+      <span >
+          Ambient glow
+        </span>
 
       {/* Camera Container */}
       <div className="relative w-full aspect-[3/4] sm:aspect-video rounded-xl overflow-hidden border border-black/10">
@@ -138,7 +141,6 @@ const WebVideo = () => {
       <div className=" font-semibold text-gray-600 text-2xl font-mono flex justify-center">
           <h1>Moood:  </h1>
           <div className=" text-2xl">
-
             <p>{displayExperssion}</p>
             <img
                 src={emotionImages[displayExperssion]}
